@@ -1,1 +1,49 @@
-﻿
+﻿// Exercise 2.1 Assume the time of day is represented as a pair (hh, mm):int*int.
+// Write a function timediff:int*int->int*int->int so that timediff t1 t2 computes the difference in minutes between t1 and t2, i.e., t2-t1. A few examples:
+// val timediff : int * int -> int * int -> int
+// > timediff (12,34) (11,35);;
+// val it : int = -59
+// > timediff (12,34) (13,35);;
+// val it : int = 61
+
+let timediff (a:int,b:int) (c:int,d: int) = 
+    (c*60+d) - (a*60+b) // F# is so cool
+
+// Exercise 2.2 Write a function minutes:int*int->int to compute the number of minutes since midnight.
+// Easily done using the function timediff. A few examples:
+// val minutes : int * int -> int
+// > minutes (14,24);;
+// val it : int = 864
+// > minutes (23,1);;
+// val it : int = 1381
+
+let minutesSinceMidnight (a:int,b:int) = 
+    timediff (0,0) (a,b)
+
+// Exercise 2.3 Solve HR, exercise 2.2
+// Declare the F# function isIthChar: string * int * char -> bool where the value of
+// isIthChar(str,i,ch) is true if and only if chis the i’th character in the string str (numbering
+// starting at zero).
+
+let isIthChar (str: string) (i:int) (ch:char) = 
+    if str.[i] = ch then true else false
+
+// // test: isIthChar "migul" 0 'm';;  
+// Declare an F# function pow: string * int -> string, where:
+// pow(s,n) = s·s···· ·s
+// n
+// where we use· to denote string concatenation. (The F# representation is +.)
+
+let rec pow (s:string ,n:int) = 
+    match (s,n) with
+    | (s,0) -> ""
+    | (s, n) -> s + pow (s,n-1) //Miguelito yo te amorito
+
+// Exercise 2.4 Solve HR, exercise 2.8
+
+let bin (n:int,k:int ) = 
+    match (n,k) with
+    | (n,0) -> 1
+    | (n,k) -> 
+        if k = n then 1
+        else // I love Miguel
