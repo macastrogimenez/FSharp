@@ -37,13 +37,37 @@ let isIthChar (str: string) (i:int) (ch:char) =
 let rec pow (s:string ,n:int) = 
     match (s,n) with
     | (s,0) -> ""
-    | (s, n) -> s + pow (s,n-1) //Miguelito yo te amorito
+    | (s, n) -> s + pow (s,n-1) 
 
 // Exercise 2.4 Solve HR, exercise 2.8
 
-let bin (n:int,k:int ) = 
+let rec bin (n:int,k:int ) = 
     match (n,k) with
     | (n,0) -> 1
     | (n,k) -> 
         if k = n then 1
-        else // I love Miguel
+        else bin (n-1, k-1) + bin (n-1, k)
+
+// Exercise 2.5 Solve HR, exercise 2.9
+
+// 2.9 Consider the declaration:
+let rec f = function
+    | (0,y) -> y
+    | (x,y) -> f(x-1, x*y)
+
+// 1. Determine the type of f. -> int * int -> int
+// 2. For which arguments does the evaluation of f terminate? for x = 0
+// 3. Write the evaluation steps for f(2,3). 
+    (*
+    f (2,3)
+    -> f(1,6)
+    -> f(0,6)
+    -> 6
+    *)
+// 4. What is the mathematical meaning of f(x,y)?
+// x*!f
+
+
+
+
+
