@@ -65,9 +65,32 @@ let rec f = function
     -> 6
     *)
 // 4. What is the mathematical meaning of f(x,y)?
-// x*!f
+// y*!x
 
+//Exercise 2.6 Solve HR, exercise 2.10
 
+// Consider the following declaration:
+let test(c,e) = if c then e else 0;;
+
+// 1. What is the type of test? 
+
+//bool * int -> int
+
+// 2. What is the result of evaluating test(false, fact(-1))?
+
+(*Due to the "Eager evaluation" concept of F# all arguments of the function are evaluated simultaneously
+once they are given to a function, and since one of them would throw the function into 
+infinite recursion, the function never manages to actually reach the if statement evaluation
+*)
+let rec fact = function
+| 0 -> 1
+| n -> n * fact(n-1);;
+
+// 3. Compare this with the result of evaluating if false then fact -1 else 0
+
+(*In the case of the if statement, its evaluation is "lazy", therefore,
+its arguments are only evaluated once they are needed but never before
+*)
 
 
 
