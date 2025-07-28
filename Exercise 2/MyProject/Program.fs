@@ -117,8 +117,3 @@ let uncurry g =
     f 
 
 let sumCurried x y = x + y
-
-
-//hehehe 
-// heheh 2s
-// heheh
