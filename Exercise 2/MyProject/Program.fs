@@ -92,5 +92,30 @@ let rec fact = function
 its arguments are only evaluated once they are needed but never before
 *)
 
+//  Exercise 2.7 Solve HR, exercise 2.13
+
+// The functions curry and uncurry of types
+// curry : (’a * ’b -> ’c) -> ’a -> ’b -> ’c
+// uncurry : (’a -> ’b -> ’c) -> ’a * ’b -> ’c
+// are defined in the following way:
+// curry f is the function g where g x is the function h where h y= f(x,y).
+// uncurry g is the function f where f(x,y) is the value h y for the function h= g x.
+// Write declarations of curry and uncurry.
+
+let curry f = 
+    let g x =
+        let h y= f(x,y)
+        h 
+    g
+
+let sumUncurried (x, y) = x + y 
+
+let uncurry g =
+    let f (x,y) = 
+        let h = g x 
+        h y 
+    f 
+
+let sumCurried x y = x + y
 
 
