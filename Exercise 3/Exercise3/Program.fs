@@ -209,3 +209,32 @@ let cnB =
         b = 4.0
     }
 
+// test1 - addition
+// cnA +./ cnB;; the result should be (4.00,6.00)
+
+// test2 - multiplication
+// cnA ./ cnB;; the result should be (-5.00,10.00)
+
+// test3 - subtraction 
+// cnA -./ cnB;; the result should be (-2.00,-2.00)
+
+// test4 - division 
+// cnA /./ cnB;; the result should be (0.44,0.08)
+
+//Exercise 3.6 Solve HR, exercise 4.4
+(*
+    Give a declaration for altsum (see Page 76) containing just two clauses.
+let rec altsum = function
+| [] -> 0
+| [x] -> x
+| x0::x1::xs -> x0 - x1 + altsum xs;;
+val altsum : int list -> int
+
+altsum [2; -1; 3];;
+val it : int = 6
+*)
+
+let rec altsum = function
+| [] -> 0  
+| x::xs -> if xs.IsEmpty then x
+            else x - xs.Head + altsum xs.Tail
