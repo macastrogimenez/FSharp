@@ -125,4 +125,87 @@ let uliTreasure =
         pounds = 11
     }
 
+// Exercise 3.5 Solve HR, exercise 3.3.
+
+(*
+The set of complex numbers is the set of pairs of real numbers. Complex numbers behave almost
+like real numbers if addition and multiplication are defined by:
+(a,b) + (c,d) = (a+ c,b+ d)
+(a,b)·(c,d) = (ac−bd,bc+ ad)
+1. 2. Declare suitable infix functions for addition and multiplication of complex numbers.
+The inverse of (a,b) with regard to addition, that is,−(a,b), is (−a,−b), and the inverse of
+(a,b) with regard to multiplication, that is, 1/(a,b), is (a/(a2 + b2),−b/(a2 + b2)) (provided
+that a nd bare not both zero). Declare infix functions for subtraction and division of complex
+numbers.
+3. Use let-expressions in the declaration of the division of complex numbers in order to avoid
+repeated evaluation of identical subexpressions.
+*)
+
+type ComplexNumber = 
+    {
+        a : float
+        b : float 
+    }
+
+let (+./) (first:ComplexNumber) (second:ComplexNumber) =
+    let newA = first.a + second.a
+    let newB= first.b + second.b
+    let newCN = 
+        {
+            a = newA
+            b = newB
+        }
+    newCN
+
+let (./) (first:ComplexNumber) (second:ComplexNumber) =
+    let newA = first.a * second.a - first.b * second.b
+    let newB= first.b * second.a + first.a * second.b
+    let newCN = 
+        {
+            a = newA
+            b = newB
+        }
+    newCN
+
+let (-./) (first:ComplexNumber) (second:ComplexNumber) =
+    let negativeSecond = 
+        { 
+            a = -second.a
+            b = -second.b
+        }
+    let newA = first.a + negativeSecond.a
+    let newB= first.b + negativeSecond.b
+    let newCN = 
+        {
+            a = newA
+            b = newB
+        }
+    newCN
+
+let (/./) (first:ComplexNumber) (second:ComplexNumber) =
+    let inverseSecond = 
+        { 
+            a = second.a/(second.a*second.a + second.b*second.b)
+            b = -second.b/(second.a*second.a + second.b*second.b)
+        }
+    let newA = first.a * inverseSecond.a - first.b * inverseSecond.b
+    let newB= first.b * inverseSecond.a + first.a * inverseSecond.b
+    let newCN = 
+        {
+            a = newA
+            b = newB
+        }
+    newCN
+
+let cnA = 
+    {
+        a = 1.0
+        b = 2.0
+    }
+
+let cnB = 
+    {
+        a = 3.0
+        b = 4.0
+    }
 
