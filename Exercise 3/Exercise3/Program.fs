@@ -29,3 +29,16 @@ let rec removeOddIdx xs =
     |x::xs -> if x % 2 = 0 then x :: removeOddIdx xs else removeOddIdx xs
     
 let zeroToTen = [0.. +1 .. 10]
+
+(*
+Exercise 3.3 Write a function
+combinePair:int list->(int*int) list
+so that combinePair xs returns the list with elements from xs combined into pairs. If xs contains an odd
+number of elements, then the last element is thrown away:
+combinePair [x1; x2; x3; x4] = [(x1,x2);(x3,x4)]
+combinePair [x1; x2; x3] = [(x1,x2)]
+combinePair [] = []
+combinePair [x1] = []
+*)
+
+let rec combinePair
