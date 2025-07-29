@@ -103,13 +103,13 @@ let (-/) (a:BritishCurrency) (b: BritishCurrency) =
         let finalPounds =  ((a.pounds*20*12+a.shillings*12+a.pence) - (b.pounds*20*12+b.shillings*12+b.pence))/(20*12)
         let finalShillings = (((a.pounds*20*12+a.shillings*12+a.pence) - (b.pounds*20*12+b.shillings*12+b.pence))%(20*12))/12
         let finalPence = (((a.pounds*20*12+a.shillings*12+a.pence) - (b.pounds*20*12+b.shillings*12+b.pence))%(20*12))%12
-        let substractedBritishCcy: BritishCurrency = 
+        let subtractedBritishCcy: BritishCurrency = 
             {
                 pence = finalPence
                 shillings = finalShillings
                 pounds = finalPounds
             }
-        substractedBritishCcy
+        subtractedBritishCcy
 
 let migTresure = 
     {
