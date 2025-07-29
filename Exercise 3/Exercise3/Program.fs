@@ -41,4 +41,14 @@ combinePair [] = []
 combinePair [x1] = []
 *)
 
-let rec combinePair
+let rec combinePair xs =
+    match xs with
+    | []-> []
+    | x::xy -> 
+        if List.isEmpty xy then [] else 
+        (x, List.head xy)::combinePair (List.tail xy)
+
+let oddElementsList = [0..+1..10]
+let evenElementsList = [0..+1..11]
+let emptyList : list<int> = []
+let oneElementList = [1]
