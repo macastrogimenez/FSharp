@@ -23,11 +23,9 @@ so that removeOddIdx xs removes the odd-indexed elements from the list xs:
 removeOddIdx [x0; x1; x2; x3; x4; ...] = [x0; x2; x4; ...]
 removeOddIdx [] = []
 removeOddIdx [x0] = [x0]*)
-
-let removeOddIdx xs = 
+let rec removeOddIdx xs = 
     match xs with 
     |[] -> []
-    |x::ys -> List.map (fun x -> if x%2 = 0 then Some(x) else None) xs
-// TODO: the function returns a map with the NONEs and Somes and we only want the even values, how to completely
-// skip the odd values? Fix and test again.
-let oneToTen = [1.. +1 .. 10]
+    |x::xs -> if x % 2 = 0 then x :: removeOddIdx xs else removeOddIdx xs
+    
+let zeroToTen = [0.. +1 .. 10]
