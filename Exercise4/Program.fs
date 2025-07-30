@@ -37,3 +37,5 @@ let implode xs = List.foldBack (fun c s -> string c + s) xs ""
 // test: implode abc;; val it: string = "abc"
 
 // TODO: do the implodeRev function and take it from there.
+// TODO: check with AI why does the function applied in implode xs can take two parameters,
+//          - understand the logic behind that function which does not make sense. 
