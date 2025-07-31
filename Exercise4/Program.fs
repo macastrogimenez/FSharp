@@ -87,3 +87,127 @@ let toUpper3 s =
 // notation: (f << g) x = f(g(x)).
 
 // test: toUpper3 "heyooo ulita";; val it: string = "HEYOOO ULITA"    
+
+(*
+Exercise 4.4 Write a function
+palindrome:string->bool,
+so that palindrome s returns true if the string s is a palindrome; otherwise false.
+A string is called a palindrome if it is identical to the reversed string, eg, “Anna” is a palindrome but “Ann” is not.
+The function is not case sensitive.
+*)
+
+let palindrome s =
+    let palidromOfS = s |> explode |> List.map System.Char.ToLower |> implodeRev
+    if s.ToLower() = palidromOfS then true else false
+
+(*
+Exercise 4.5 The Ackermann function is a recursive function where both value and number of mutually recursive
+calls grow rapidly.
+Write the function
+ack:int*int->int
+that implements the Ackermann function using pattern matching on the cases of (m,n) as given below.
+A(m, n) =
+
+
+
+n + 1 if m = 0
+A(m − 1, 1) if m > 0 and n = 0
+A(m − 1, A(m, n − 1)) if m > 0 and n > 0
+What is the result of ack(3,11).
+Notice: The Ackermann function is defined for non negative numbers only
+*)
+
+let rec ack (m, n) = 
+    match (m,n) with
+    | (0,n) -> n+1
+    | (m,0) -> ack (m-1,1)
+    | (m,n) when (m > 0 && n > 0) -> ack(m-1,ack(m,n-1))
+    | (m,n) when (m < 0 || n < 0) -> failwith "invalid value, none of the functions parameters can be negative"
+
+
+let rec ackSafe (m,n) = 
+    match (m,n) with
+    | (m,n) when (m < 0 || n < 0) -> None
+    | (0,n) -> Some(n+1)
+    | (m,0) -> ackSafe (m-1,1)
+    | (m,n) -> ackSafe (m-1,ack(m,n-1))        
+
+(*
+Exercise 4.6 The function
+time f:(unit->’a)->’a*TimeSpan
+below times the computation of f x and returns the result and the real time used for the computation.
+let time f =
+let start = System.DateTime.Now in
+let res = f () in
+let finish = System.DateTime.Now in
+(res, finish - start);
+Try compute time (fun () -> ack (3,11)).
+Write a new function
+timeArg1 f a : (’a -> ’b) -> ’a -> ’b * TimeSpan
+that times the computation of evaluating the function f with argument a. Try timeArg1 ack (3,11).
+Hint: You can use the function time above if you hide f a in a lambda (function).
+*)
+let time f =
+    let start = System.DateTime.Now in
+    let res = f () in
+    let finish = System.DateTime.Now in
+    (res, finish - start);
+
+(*
+>  time (fun () -> ack (3,11));; 
+val it: int * System.TimeSpan =
+  (16381, 00:00:00.5269360 {Days = 0;
+                            Hours = 0;
+                            Microseconds = 936;
+                            Milliseconds = 526;
+                            Minutes = 0;
+                            Nanoseconds = 0;
+                            Seconds = 0;
+                            Ticks = 5269360L;
+                            TotalDays = 6.098796296e-06;
+                            TotalHours = 0.0001463711111;
+                            TotalMicroseconds = 526936.0;
+                            TotalMilliseconds = 526.936;
+                            TotalMinutes = 0.008782266667;
+                            TotalNanoseconds = 526936000.0;
+                            TotalSeconds = 0.526936;})
+*)
+
+let timeArg1 f a = time (fun () -> f a )
+// test: timeArg1 ack (3,11);;
+
+(*
+Exercise 4.7 HR exercise 5.4
+Declare a function downto1 such that:
+downto1 f n e= f(1,f(2,...,f(n−1,f(n,e))...)) for n > 0
+downto1 f n e= e for n ≤ 0
+Declare the factorial function by use of downto1.
+Use downto1 to declare a function that builds the list [g(1),g(2),...,g(n)] for a function g
+and an integer n.
+
+In Code Judge, we use the faculty function as the function g:
+let rec fact = function
+| 0 -> 1
+| n when n > 0 -> n * fact(n-1)
+| _ -> failwith "fact only works on positive numbers"
+We can then call buildList as
+buildList fact n
+where n is a positive integer.
+*)
+
+let downto1 f n e = 
+    match n with
+    | n when n <= 0 -> e 
+    | n when n > 0 -> 
+        let listN = [1.. +1 ..n]
+        List.foldBack f listN e
+
+let fact n = downto1 (fun x e -> x * e) n 1;; 
+
+let rec fact2 = function
+| 0 -> 1
+| n when n > 0 -> n * fact(n-1)
+| _ -> failwith "fact only works on positive numbers"
+
+let buildList n = downto1 (fun n e-> fact2 n::e) n []
+
