@@ -202,6 +202,7 @@ let downto1 f n e =
         let listN = [1.. +1 ..n]
         List.foldBack f listN e
 let fact n = downto1 (fun x e -> x * e) n 1;; 
+// fact function declared using downto1
 
 let rec fact2 = function
 | 0 -> 1
