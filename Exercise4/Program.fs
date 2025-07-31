@@ -201,7 +201,6 @@ let downto1 f n e =
     | n when n > 0 -> 
         let listN = [1.. +1 ..n]
         List.foldBack f listN e
-
 let fact n = downto1 (fun x e -> x * e) n 1;; 
 
 let rec fact2 = function
@@ -209,5 +208,5 @@ let rec fact2 = function
 | n when n > 0 -> n * fact(n-1)
 | _ -> failwith "fact only works on positive numbers"
 
-let buildList n = downto1 (fun n e-> fact2 n::e) n []
-
+let buildList f n = downto1 (fun n e-> f n::e) n []
+// test: buildList fact 5;;
