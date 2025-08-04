@@ -106,7 +106,6 @@ Example 2: Stateful function
 let mutable counter = 0
 let statefulIncrement x =
     counter <- counter + 1
-    counter = counter + 1
     printfn "Step %d: processing %d" counter x
     x * 10
 
