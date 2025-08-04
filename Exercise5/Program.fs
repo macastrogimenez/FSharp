@@ -121,11 +121,32 @@ let result2 = mapPostOrder statefulIncrement testTree
 
 // Both result1 and result2 have identical tree structure!
 
+// ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
+
 (*
-inOrder(Node(Node(Leaf,1,Leaf), 3, Node(Node(Leaf,4,Leaf), 5, Leaf)));;
-Result should be: [1; 3; 4; 5]
+Exercise 5.3 Write a function
+foldInOrder : (’a -> ’b -> ’b) -> ’b -> ’a BinTree -> ’b
+that makes an in-order traversal of the tree and folds over the elements.
+For instance, given the tree 
+let floatBinTree = Node(43.0,Node(25.0, Node(56.0,Leaf, Leaf), Leaf),
+Node(562.0, Leaf, Node(78.0, Leaf,Leaf)))
+the application
+foldInOrder (fun n a -> a + n) 0.0 floatBinTree
+returns 764.0.
 *)
+let floatBinTree = Node(43.0,Node(25.0, Node(56.0,Leaf, Leaf), Leaf),
+    Node(562.0, Leaf, Node(78.0, Leaf,Leaf)))
 
+let rec foldInOrder fn acc bt = 
+    match bt with
+    | Leaf -> acc
+    | Node(value, left, right) ->
+        let leftResult = foldInOrder fn acc left        // Fold left subtree
+        let midResult = fn value leftResult             // Apply function to current node
+        foldInOrder fn midResult right                  // Fold right subtree
 
-// ------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------
+// test: foldInOrder (fun n a -> a + n) 0.0 floatBinTree;;
+    // - foldInOrder (fun n a -> a + n) 0.0 floatBinTree;;;;
+    // val it: float = 764.0
+
