@@ -138,15 +138,115 @@ returns 764.0.
 let floatBinTree = Node(43.0,Node(25.0, Node(56.0,Leaf, Leaf), Leaf),
     Node(562.0, Leaf, Node(78.0, Leaf,Leaf)))
 
+let foldInOrder fn acc bt = bt |> inOrder |> List.fold fn acc
+// test: foldInOrder (fun n a -> a + n) 0.0 floatBinTree;;
+    // - foldInOrder (fun n a -> a + n) 0.0 floatBinTree;;;;
+    // val it: float = 764.0
+let rec foldInOrder2 fn acc bt = 
+    match bt with
+    | Leaf -> acc
+    | Node(value, left, right) ->
+        let leftResult = foldInOrder2 fn acc left
+        let midResult = fn value leftResult
+        foldInOrder2 fn midResult right
+
+// TODO: See the code below and understand how to tell what kind
+    // of function to write based on the signature, because that is a 
+    // weak spot at the moment, something that is not quite clear.
+
+(*
+Great question! Your current `foldInOrder` function uses a composition approach, but to make it have the exact type signature `('a -> 'b -> 'b) -> 'b -> 'a BinTree -> 'b`, you need to implement it as a **direct recursive function** that folds over the tree structure itself, rather than converting to a list first.
+
+Here's how to fix it: 
+```
+Made changes.
+
+
+```
+## **Why This Works:**
+
+### **Type Signature Breakdown:**
+```fsharp
+foldInOrder : ('a -> 'b -> 'b) -> 'b -> 'a BinTree -> 'b
+              ↑                  ↑    ↑           ↑
+              function           acc  tree        result
+```
+
+### **In-Order Traversal Pattern:**
+1. **Process left subtree** with accumulator
+2. **Apply function to current node** with result from left
+3. **Process right subtree** with updated accumulator
+
+### **How it executes with your example:**
+```fsharp
+foldInOrder (fun n a -> a + n) 0.0 floatBinTree
+
+// Tree structure:
+//       43.0
+//      /    \
+//   25.0     562.0
+//   /           \
+// 56.0         78.0
+
+// Execution order (in-order):
+// 1. foldInOrder on left subtree of 43.0
+//    1a. foldInOrder on left subtree of 25.0 (56.0 node)
+//        - Left: Leaf → 0.0
+//        - Node: 56.0 + 0.0 = 56.0
+//        - Right: Leaf → 56.0
+//    1b. Node 25.0: 25.0 + 56.0 = 81.0
+//    1c. Right of 25.0: Leaf → 81.0
+// 2. Node 43.0: 43.0 + 81.0 = 124.0
+// 3. foldInOrder on right subtree of 43.0
+//    3a. Left of 562.0: Leaf → 124.0
+//    3b. Node 562.0: 562.0 + 124.0 = 686.0
+//    3c. Right subtree (78.0): 78.0 + 686.0 = 764.0
+```
+
+## **Comparison with Your Original Approach:**
+
+### **Your original (composition):**
+```fsharp
+let foldInOrder fn acc bt = bt |> inOrder |> List.fold fn acc
+```
+- **Pros:** Simple, reuses existing functions
+- **Cons:** Creates intermediate list, less efficient
+
+### **New direct implementation:**
+```fsharp
 let rec foldInOrder fn acc bt = 
     match bt with
     | Leaf -> acc
     | Node(value, left, right) ->
-        let leftResult = foldInOrder fn acc left        // Fold left subtree
-        let midResult = fn value leftResult             // Apply function to current node
-        foldInOrder fn midResult right                  // Fold right subtree
+        let leftResult = foldInOrder fn acc left
+        let midResult = fn value leftResult
+        foldInOrder fn midResult right
+```
+- **Pros:** More efficient (no intermediate list), direct tree traversal
+- **Cons:** Slightly more complex
 
-// test: foldInOrder (fun n a -> a + n) 0.0 floatBinTree;;
-    // - foldInOrder (fun n a -> a + n) 0.0 floatBinTree;;;;
-    // val it: float = 764.0
+## **Alternative Implementations:**
+
+### **Using continuation-passing style:**
+```fsharp
+let rec foldInOrder fn acc = function
+    | Leaf -> acc
+    | Node(v, l, r) -> 
+        foldInOrder fn (fn v (foldInOrder fn acc l)) r
+```
+
+### **More explicit with let bindings:**
+```fsharp
+let rec foldInOrder fn acc tree =
+    match tree with
+    | Leaf -> acc
+    | Node(value, leftTree, rightTree) ->
+        let accAfterLeft = foldInOrder fn acc leftTree
+        let accAfterNode = fn value accAfterLeft  
+        let accAfterRight = foldInOrder fn accAfterNode rightTree
+        accAfterRight
+```
+
+Your new `foldInOrder` function now has the exact type signature requested and implements true in-order folding directly on the tree structure!
+*)
 
