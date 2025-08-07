@@ -149,10 +149,29 @@ let rec foldInOrder2 fn acc bt =
         let leftResult = foldInOrder2 fn acc left
         let midResult = fn value leftResult
         foldInOrder2 fn midResult right
-
-// TODO: See the code below and understand how to tell what kind
-    // of function to write based on the signature, because that is a 
-    // weak spot at the moment, something that is not quite clear.
+        
+let rec foldInOrder3 f acc bT = 
+    match bT with
+    |Leaf -> acc
+    |Node(root,leftTree,rightTree) -> 
+        let processRoot= f acc root
+        let processLeft = foldInOrder3 f processRoot leftTree
+        foldInOrder3 f processLeft rightTree
+        
+let sumAndPrint acc a= 
+    let b = acc + a
+    printfn "%f" a 
+    b
+    
+let rec foldPostOrder f acc bT = 
+    match bT with 
+    |Leaf -> acc
+    |Node(root,leftTree,rightTree) -> f (foldPostOrder f (foldPostOrder f acc leftTree) rightTree) root
+        
+let rec foldPreOrder f acc bT = 
+    match bT with
+    |Leaf -> acc
+    |Node(root,leftTree,rightTree) -> foldPreOrder f (foldPreOrder f (f acc root) leftTree) rightTree
 
 (*
 Great question! Your current `foldInOrder` function uses a composition approach, but to make it have the exact type signature `('a -> 'b -> 'b) -> 'b -> 'a BinTree -> 'b`, you need to implement it as a **direct recursive function** that folds over the tree structure itself, rather than converting to a list first.
