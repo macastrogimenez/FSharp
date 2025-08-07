@@ -149,7 +149,7 @@ let rec foldInOrder2 fn acc bt =
         let leftResult = foldInOrder2 fn acc left
         let midResult = fn value leftResult
         foldInOrder2 fn midResult right
-        
+
 let rec foldInOrder3 f acc bT = 
     match bT with
     |Leaf -> acc
@@ -172,6 +172,7 @@ let rec foldPreOrder f acc bT =
     match bT with
     |Leaf -> acc
     |Node(root,leftTree,rightTree) -> foldPreOrder f (foldPreOrder f (f acc root) leftTree) rightTree
+
 
 (*
 Great question! Your current `foldInOrder` function uses a composition approach, but to make it have the exact type signature `('a -> 'b -> 'b) -> 'b -> 'a BinTree -> 'b`, you need to implement it as a **direct recursive function** that folds over the tree structure itself, rather than converting to a list first.
@@ -268,4 +269,82 @@ let rec foldInOrder fn acc tree =
 
 Your new `foldInOrder` function now has the exact type signature requested and implements true in-order folding directly on the tree structure!
 *)
+let rec insert i = function
+    | Leaf -> Node (i, Leaf, Leaf)
+    | Node (root, left, right) as bT-> 
+        match compare i root with 
+        | 0 -> bT
+        | n when n < 0 -> Node(root, insert i left, right)
+        | _ -> Node(root, left,insert i right)
+            
+
+let mutable newTree = Node(6,Leaf,Leaf);;
+
+newTree <- insert 5 newTree;;
+newTree <- insert 10 newTree;;
+newTree <- insert 41 newTree;;
+
+let rec memberOf i = function // type int -> binTree -> bool
+    |Leaf -> false
+    |Node (root, l, r) as bT-> 
+        match compare i root with
+        | 0 -> true
+        | n when n < 0 -> memberOf i l
+        | _ -> memberOf i r
+
+memberOf 5 newTree;;
+memberOf 41 newTree;;
+
+// ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
+
+(*
+Exercise 5.4 Complete the program skeleton for the interpreter presented on slide 28 in the slide deck from the
+lecture 5 about finite trees.
+The declaration for the abstract syntax for arithmetic expressions follows the grammar (slide 23): *)
+
+type aExp = (* Arithmetical expressions *)
+| N of int (* numbers *)
+| V of string (* variables *)
+| Add of aExp * aExp (* addition *)
+| Mul of aExp * aExp (* multiplication *)
+| Sub of aExp * aExp (* subtraction *)
+
+// The declaration of the abstract syntax for boolean expressions is defined as follows (slide 25). 
+type bExp = (* Boolean expressions *)
+| TT (* true *)
+| FF (* false *)
+| Eq of aExp * aExp (* equality *)
+| Lt of aExp * aExp (* less than *)
+| Neg of bExp (* negation *)
+| Con of bExp * bExp (* conjunction *)
+
+// The conjunction of two boolean values returns true if both values are true.
+// The abstract syntax for the statements are defined as below (slide 26):
+type stm = (* statements *)
+| Ass of string * aExp (* assignment *)
+| Skip
+| Seq of stm * stm (* sequential composition *)
+| ITE of bExp * stm * stm (* if-then-else *)
+| While of bExp * stm (* while *)
+
+// Define 5 examples and evaluate them.
+// For instance, consider the example stmt0 and initial state state0 below.
+
+let stmt0 = Ass("res",(Add(N 10, N 30)))
+let state0 = Map.empty
+
+// You can then run the example as follows
+// > I stmt0 state0;;
+// val it : Map<string,int> = map [("res", 40)]
+// and get the result state with variable res assigned the value 40 (as expected).
+
+//TODO: complete the skeleton below using the types above:
+let rec I stm s =
+    match stm with
+    | Ass(x,a) -> update x ( ... ) s
+    | Skip -> ...
+    | Seq(stm1, stm2) -> ...
+    | ITE(b,stm1,stm2) -> ...
+    | While(b, stm) -> ... ;;
 
