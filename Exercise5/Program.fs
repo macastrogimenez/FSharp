@@ -310,6 +310,14 @@ type aExp = (* Arithmetical expressions *)
 | Mul of aExp * aExp (* multiplication *)
 | Sub of aExp * aExp (* subtraction *)
 
+let rec evalA exp env =
+    match exp with
+    | N n -> n 
+    | V v -> Map.find v env
+    | Add(a,b) -> evalA a env + evalA b env
+    | Mul(a,b)-> evalA a env * evalA b env
+    | Sub(a,b)-> evalA a env - evalA b env
+
 // The declaration of the abstract syntax for boolean expressions is defined as follows (slide 25). 
 type bExp = (* Boolean expressions *)
 | TT (* true *)
@@ -318,6 +326,19 @@ type bExp = (* Boolean expressions *)
 | Lt of aExp * aExp (* less than *)
 | Neg of bExp (* negation *)
 | Con of bExp * bExp (* conjunction *)
+
+let rec evalB exp  env =
+    match exp with
+    | TT -> true
+    | FF -> false
+    | Eq(a,b) -> if evalA a env = evalA b env then true else false
+    | Lt(a,b)-> if evalA a env < evalA b env then true else false
+    | Neg a -> if a = TT then false else true
+    | Con(a,b) -> 
+        match evalB a env, evalB b env with
+        |(true,true)-> true
+        |(_,_) -> false
+        
 
 // The conjunction of two boolean values returns true if both values are true.
 // The abstract syntax for the statements are defined as below (slide 26):
@@ -340,11 +361,10 @@ let state0 = Map.empty
 // and get the result state with variable res assigned the value 40 (as expected).
 
 //TODO: complete the skeleton below using the types above:
-let rec I stm s =
+let rec I stm env =
     match stm with
-    | Ass(x,a) -> update x ( ... ) s
-    | Skip -> ...
-    | Seq(stm1, stm2) -> ...
-    | ITE(b,stm1,stm2) -> ...
-    | While(b, stm) -> ... ;;
-
+    | Ass(x,a) -> Map.add x (evalA a env) env
+    // | Skip -> ...
+    // | Seq(stm1, stm2) -> ...
+    // | ITE(b,stm1,stm2) -> ...
+    // | While(b, stm) -> ... ;;
