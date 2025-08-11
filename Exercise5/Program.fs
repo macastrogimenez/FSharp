@@ -364,7 +364,27 @@ let state0 = Map.empty
 let rec I stm env =
     match stm with
     | Ass(x,a) -> Map.add x (evalA a env) env
-    // | Skip -> ...
-    // | Seq(stm1, stm2) -> ...
-    // | ITE(b,stm1,stm2) -> ...
-    // | While(b, stm) -> ... ;;
+    | Skip -> env 
+    | Seq(stm1, stm2) ->
+            I stm1 env |> I stm2
+    | ITE(b,stm1,stm2) -> if (evalB b env) = true then I stm1 env else I stm2 env 
+    | While(b, stm3) -> 
+        match evalB b env with
+        | true -> I stm3 env
+        | _ ->  I Skip env 
+
+// need to test:
+(*
+SKIP stm1 -> if given an environment such as state0 with the SKIP keyword it will return state0 untouched -> PASSED
+SEQ stm2 -> given an environment, it will perform two statements in sequential order on the env and returned the modified env
+    example: 
+        assign a = 10
+        assing b = 12
+        return map with a = 10  and b = 12
+ITE -> given env perform x on env if b is true 
+    if Lt(10,12) = true then 
+WHILE
+*)
+
+let stm1 = I Skip state0
+let stm2 = Seq(Ass(),Ass())
