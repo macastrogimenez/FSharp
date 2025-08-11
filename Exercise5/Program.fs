@@ -360,7 +360,8 @@ let state0 = Map.empty
 // val it : Map<string,int> = map [("res", 40)]
 // and get the result state with variable res assigned the value 40 (as expected).
 
-//TODO: complete the skeleton below using the types above:
+//TODO: review line 373 and fix the logic behind the function, so that it executes more than once
+// but does not go in an infinite loop.
 let rec I stm env =
     match stm with
     | Ass(x,a) -> Map.add x (evalA a env) env
@@ -370,7 +371,7 @@ let rec I stm env =
     | ITE(b,stm1,stm2) -> if (evalB b env) = true then I stm1 env else I stm2 env 
     | While(b, stm3) -> 
         match evalB b env with
-        | true -> I stm3 env
+        | true -> I (Seq(stm3,(While(b,stm3)))) env
         | _ ->  I Skip env 
 
 // need to test:
@@ -382,9 +383,26 @@ SEQ stm2 -> given an environment, it will perform two statements in sequential o
         assing b = 12
         return map with a = 10  and b = 12
 ITE -> given env perform x on env if b is true 
-    if Lt(10,12) = true then 
+    if Lt(10,12) = true then do stm2
 WHILE
 *)
 
 let stm1 = I Skip state0
-let stm2 = Seq(Ass(),Ass())
+let stm2 = Seq(Ass("a",N(10)),Ass("b",N(12)))
+// test: I stm2 state0;;
+
+let stm3 = ITE(Lt(N(10),N(12)),stm2,Skip)
+let stm4 = ITE(Lt(N(13),N(12)),stm2,Skip)
+// test: I stm3 state0;;
+    // should return the map with 10 and 12 --> PASSED
+// test: I stm4 state0;;
+    // should return the empty map --> PASSED
+let stm5 = 
+    Seq(Seq(Ass("a",N(10)),Ass("b",N(200))),
+        While(
+            (Lt((V "a"),(V "b"))),
+            (Ass("a",(Add(V "a",N 1))))
+        ))
+
+// test: I stm5 state0;; --> PASSED
+
