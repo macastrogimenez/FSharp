@@ -348,6 +348,8 @@ type stm = (* statements *)
 | Seq of stm * stm (* sequential composition *)
 | ITE of bExp * stm * stm (* if-then-else *)
 | While of bExp * stm (* while *)
+| RU of bExp * stm (*  Repeat Until *)
+| IT of bExp * stm (* If then *)
 
 // Define 5 examples and evaluate them.
 // For instance, consider the example stmt0 and initial state state0 below.
@@ -360,8 +362,6 @@ let state0 = Map.empty
 // val it : Map<string,int> = map [("res", 40)]
 // and get the result state with variable res assigned the value 40 (as expected).
 
-//TODO: review line 373 and fix the logic behind the function, so that it executes more than once
-// but does not go in an infinite loop.
 let rec I stm env =
     match stm with
     | Ass(x,a) -> Map.add x (evalA a env) env
@@ -373,6 +373,11 @@ let rec I stm env =
         match evalB b env with
         | true -> I (Seq(stm3,(While(b,stm3)))) env
         | _ ->  I Skip env 
+    | RU(b, stm4) -> 
+        match evalB b env with
+        | false -> I (Seq(stm4,(RU(b,stm4)))) env
+        | _ ->  I Skip env (* Repeat Until *)
+    | IT (b,stm5) -> if (evalB b env) = true then I stm5 env else I Skip env
 
 // need to test:
 (*
@@ -388,21 +393,72 @@ WHILE
 *)
 
 let stm1 = I Skip state0
+// Skip test, running the above line --> PASSED
 let stm2 = Seq(Ass("a",N(10)),Ass("b",N(12)))
-// test: I stm2 state0;;
+// SEQ, Ass, N test: I stm2 state0;; --> PASSED
 
 let stm3 = ITE(Lt(N(10),N(12)),stm2,Skip)
 let stm4 = ITE(Lt(N(13),N(12)),stm2,Skip)
-// test: I stm3 state0;;
+// ITE, Lt, N, Skip test: I stm3 state0;;
     // should return the map with 10 and 12 --> PASSED
-// test: I stm4 state0;;
+// ITE, Lt, N, Skip test: I stm4 state0;;
     // should return the empty map --> PASSED
 let stm5 = 
-    Seq(Seq(Ass("a",N(10)),Ass("b",N(200))),
+    Seq(Seq(Ass("a",N(1)),Ass("b",N(20))),
         While(
             (Lt((V "a"),(V "b"))),
             (Ass("a",(Add(V "a",N 1))))
         ))
 
-// test: I stm5 state0;; --> PASSED
+// WHILE, Ass, Add, Lt test: I stm5 state0;; --> PASSED
+
+// ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
+
+(*
+Exercise 5.5 Extend the abstract syntax and the interpreter with if-then and repeat-until statements.
+let rec I stm s = match stm with
+| Ass(x,a) -> update x ( ... ) s
+| Skip -> ...
+| Seq(stm1, stm2) -> ...
+| ITE(b,stm1,stm2) -> ...
+| While(b, stm) -> ...
+| RU(b, stm) -> ... (* Repeat Until *)
+| IT (b,stm1) -> ... (* If Then *)
+2
+KSFUPRO1KU, Functional Programming ITU, Spring 2025
+Again we refer to slide 28 in the slide deck from the lecture 5.
+Hint: The if–then statement is similar to the if–then–else statement when you do a Skip statement in the else
+branch.
+Hint: Slide 29 provides an example of running the fac example program with a state mapping x to 4.
+
+*)
+let stm6 = 
+    Seq(Seq(Ass("a",N(1)),Ass("b",N(20))),
+        RU(
+            (Eq((V "a"),(V "b"))),
+            (Ass("a",(Add(V "a",N 1))))
+        ))
+// RU, Ass, Add, Lt test: I stm6 state0;; --> PASSED
+let s1 = Map.ofList [("a",4);("b",20)];;
+let stm7 = 
+    (RU(
+        (Eq((V "a"),(V "b"))),
+        (Ass("a",(Add(V "a",N 1))))
+        ))
+
+// RU test with initial state: I stm7 s1;; --> PASSED
+
+let s2 = Map.ofList [("a",20);("b",10)];;
+let stm8 = IT(Lt(V "a",V "b"),Ass("Adding a (4) to b (20)",Add(V "a",V "b"))) 
+
+//IT test: I stm8 s1;; // should result in a new assignment with value 24  --> PASSED
+
+let stm9 = IT(Lt(V "a",V "b"),Ass("Subtracting b (10) from a (20)",Add(V "a",V "b"))) 
+
+//IT test: I stm9 s2;; // should result in the original map [("a",20);("b",10)]  --> PASSED
+
+// ------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------
+
 
