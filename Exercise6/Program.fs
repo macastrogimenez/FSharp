@@ -20,7 +20,7 @@ let rec Fexpr exp =
     match exp with
     | Leaf -> ""
     | Node(leftTree,s,rightTree) -> 
-        if (String.forall (fun x -> x <> ' ' ) s) then failwith "No terms in the expression can be empty or a space"
+        if (String.forall (fun x -> x = ' ' ) s) then failwith "No terms in the expression can be empty or a space"
         else (Fexpr leftTree + " " + Fexpr rightTree + " " + s).Trim()
 
 let firstCalculation = Node(Node(Leaf,"x",Leaf),"+",Node(Leaf,"7.0",Leaf))
@@ -29,6 +29,13 @@ let thirdTest = Node(Node(Leaf,"",Leaf),"+",Node(Leaf,"7.0",Leaf))
 //test: Fexpr firstCalculation;; -> PASSED
 //test: Fexpr secondCalculation;; -> PASSED
 //test: Fexpr thirdTest;; 
+
+let trans (fe, x) = 
+    (Fexpr fe).Split()
+    |> List.ofArray
+    |> List.map (fun y -> if y = "x" then x.ToString() else y )
+    
+//test: trans(secondCalculation, 1.0);;
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------------------------------------------------
@@ -64,7 +71,8 @@ intpProg: Instruction list -> float
 
 3. Declare an F# function
 trans: Fexpr * float -> Instruction list
-where Fexpr is the type for expression trees declared in Section 6.2. The value of the expression trans(fe, x) is a program prg such that intpProg(prg) gives the float value of
+where Fexpr is the type for expression trees declared in Section 6.2. The value of the expression 
+trans(fe, x) is a program prg such that intpProg(prg) gives the float value of
 fe when X has the value x. Hint: The instruction list can be obtained from the postfix form of
 the expression. (See Exercise 6.2.)
 *)
@@ -131,6 +139,14 @@ let rec intpProg il s  =
         intpInstr s x
         |> intpProg xs
 
+let rec intpProg1 il  = 
+    let s:Stack = []
+    match il with 
+    | [] -> Stack.head s 
+    | x::xs -> 
+        intpInstr s x
+        |> intpProg xs
+
 
 let iL = [ADD; SUB; MULT; PUSH 1; LOG;]
 
@@ -139,3 +155,27 @@ let oL = [ADD; SUB; MULT; PUSH 1; LOG; ADD; ADD; ADD]
     // intpProg oL stackForBasicArithmetic;; -> result should be 18 -> PASSED
 
 // Exercise 6.3 - HR exercise 7.2
+
+type Fexpr1 =
+    Leaf
+    |Node of Fexpr1 * string * Fexpr1
+
+let rec Fexpr1 exp =
+    match exp with
+    | Leaf -> ""
+    | Node(leftTree,s,rightTree) -> 
+        if (String.forall (fun x -> x = ' ' ) s) then failwith "No terms in the expression can be empty or a space"
+        else (Fexpr1 leftTree + " " + Fexpr1 rightTree + " " + s).Trim()
+
+let testExpTree = Node(Node(Leaf,"x",Leaf),"+",Node(Leaf,"7.0",Leaf))
+let testExpTree2 = Node(Node(Node(Leaf,"x",Leaf),"+",Node(Leaf,"7.0",Leaf)),"*",Node(Node(Leaf,"x",Leaf),"-",Node(Leaf,"5.0",Leaf)))
+let testExpTree3 = Node(Node(Leaf,"",Leaf),"+",Node(Leaf,"7.0",Leaf))
+//test: Fexpr testExpTree;; -> PASSED
+//test: Fexpr testExpTree2;; -> PASSED
+//test: Fexpr testExpTree3;; -> PASSED
+
+let translate (fe, x) = 
+    (Fexpr fe).Split()
+    |> List.ofArray
+    |> List.map (fun y -> if y = "x" then x.ToString() else y )
+
