@@ -64,7 +64,7 @@ intpProg: Instruction list -> float
 
 3. Declare an F# function
 trans: Fexpr * float -> Instruction list
-where Fexpr is the type for expression trees declared in Section 6.2. The value of the expression trans(fe, x) is a program prg such that intpProg(prg) gives the float value of
+where Fexpr is the type for expression trees declared in Section 6.2. The value of the expression trans(fe, x) is a program prg such that intpProg(prg) gives the float value of
 fe when X has the value x. Hint: The instruction list can be obtained from the postfix form of
 the expression. (See Exercise 6.2.)
 *)
@@ -98,17 +98,19 @@ module Stack =
     let tailHead (s:Stack) = s.Tail.Head
 let stackForTestingLog:Stack = [(System.Math.Exp 2.0) .. +2.0 .. 20.0]
 
-let stackForBasicArithmetic:Stack = [2.0 .. +1.0 .. 20.0]
-let intpInstr i (s:Stack) = 
+let stackForBasicArithmetic:Stack = [2.0 .. +1.0 .. 9.0]
+let intpInstr (s:Stack) i=
+    let Sh = Stack.head s
+    let StH = Stack.tailHead s
     match i with
-    | ADD -> Stack.doublePush (Stack.head s + Stack.tailHead s) s
-    | SUB -> Stack.doublePush (Stack.head s - Stack.tailHead s) s
-    | MULT -> Stack.doublePush (Stack.head s * Stack.tailHead s) s
-    | DIV -> Stack.doublePush (Stack.head s / Stack.tailHead s) s
-    | SIN -> Stack.push (System.Math.Sin (Stack.head s)) s
-    | COS -> Stack.push (System.Math.Cos (Stack.head s)) s
-    | LOG -> Stack.push (System.Math.Log (Stack.head s)) s
-    | EXP -> Stack.push (System.Math.Exp (Stack.head s)) s
+    | ADD -> Stack.doublePush (Sh + StH) s
+    | SUB -> Stack.doublePush (Sh - StH) s
+    | MULT -> Stack.doublePush (Sh * StH) s
+    | DIV -> Stack.doublePush (Sh / StH) s
+    | SIN -> Stack.push (System.Math.Sin (Sh)) s
+    | COS -> Stack.push (System.Math.Cos (Sh)) s
+    | LOG -> Stack.push (System.Math.Log (Sh)) s
+    | EXP -> Stack.push (System.Math.Exp (Sh)) s
     | PUSH f -> Stack.pushOnTop f s
 
 // LOG test: intpInstr LOG stackForTestingLog;;
@@ -121,5 +123,19 @@ let intpInstr i (s:Stack) =
 // EXP test: intpInstr EXP stackForBasicArithmetic;;
 // PUSH test: intpInstr (PUSH 1.0) stackForBasicArithmetic;;
 
+let rec intpProg il s  = 
+    let Result = Stack.head s
+    match il with 
+    | [] -> Result
+    | x::xs -> 
+        intpInstr s x
+        |> intpProg xs
+
+
+let iL = [ADD; SUB; MULT; PUSH 1; LOG;]
+
+let oL = [ADD; SUB; MULT; PUSH 1; LOG; ADD; ADD; ADD]
+//test: intpProg iL stackForBasicArithmetic;; -> result should be 0 -> PASSED
+    // intpProg oL stackForBasicArithmetic;; -> result should be 18 -> PASSED
 
 // Exercise 6.3 - HR exercise 7.2
