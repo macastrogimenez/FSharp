@@ -1,23 +1,39 @@
 ﻿
 (*
-Exercise 5.4 Complete the program skeleton for the interpreter presented on slide 28 in the slide deck from the
-lecture 5 about finite trees.
-The declaration for the abstract syntax for arithmetic expressions follows the grammar (slide 23): *)
+Exercise 5.6 Suppose that an expression of the form inc(x) is added to the abstract syntax. It adds one to the
+value of x in the current state, and the value of the expression is this new value of x. The expression inc(x) should
+be added to the type aExp.
+How would you refine the interpreter to cope with this construct?
+Again we refer to slide 28 in the slide deck from the lecture 5
+Hint: Adding inc(x) to aExp, means that evaluating an expression may also update the state. Hence the state
+must be returned which has a rippling effect on the evaluation functions.
+This task is only to describe how you would solve the task. There is no code to hand–in.
+ *)
 
 type aExp = (* Arithmetical expressions *)
 | N of int (* numbers *)
 | V of string (* variables *)
+| Inc of string
 | Add of aExp * aExp (* addition *)
 | Mul of aExp * aExp (* multiplication *)
 | Sub of aExp * aExp (* subtraction *)
 
 let rec evalA exp env =
     match exp with
-    | N n -> n 
-    | V v -> Map.find v env
-    | Add(a,b) -> evalA a env + evalA b env
-    | Mul(a,b)-> evalA a env * evalA b env
-    | Sub(a,b)-> evalA a env - evalA b env
+    | N n -> (n,env) 
+    | V v -> (Map.find v env,env)
+    | Inc d -> 
+        let valueD = Map.find d env + 1
+        (valueD,Map.add d valueD env)
+    | Add(a,b) ->
+        match (evalA a env, evalA b env) with
+        |((a,b),(c,d)) -> (a+c,env)
+    | Mul(a,b)-> 
+        match (evalA a env, evalA b env) with
+        |((a,b),(c,d)) -> (a-c,env)
+    | Sub(a,b)-> 
+        match (evalA a env, evalA b env) with
+        |((a,b),(c,d)) -> (a*c,env)
 
 // The declaration of the abstract syntax for boolean expressions is defined as follows (slide 25). 
 type bExp = (* Boolean expressions *)
@@ -65,7 +81,10 @@ let state0 = Map.empty
 
 let rec I stm env =
     match stm with
-    | Ass(x,a) -> Map.add x (evalA a env) env
+    | Ass(x,a) -> 
+        let valueA = evalA a env
+        match valueA with
+        |(a,b)-> Map.add x a env
     | Skip -> env 
     | Seq(stm1, stm2) ->
             I stm1 env |> I stm2
@@ -80,7 +99,7 @@ let rec I stm env =
         | _ ->  I Skip env (* Repeat Until *)
     | IT (b,stm5) -> if (evalB b env) = true then I stm5 env else I Skip env
 
-// need to test:
+
 (*
 SKIP stm1 -> if given an environment such as state0 with the SKIP keyword it will return state0 untouched -> PASSED
 SEQ stm2 -> given an environment, it will perform two statements in sequential order on the env and returned the modified env
@@ -93,7 +112,7 @@ ITE -> given env perform x on env if b is true
 WHILE
 *)
 
-let stm1 = I Skip state0
+let stm1: Map<string,int> = I Skip state0
 // Skip test, running the above line --> PASSED
 let stm2 = Seq(Ass("a",N(10)),Ass("b",N(12)))
 // SEQ, Ass, N test: I stm2 state0;; --> PASSED
@@ -112,3 +131,14 @@ let stm5 =
         ))
 
 // WHILE, Ass, Add, Lt test: I stm5 state0;; --> PASSED
+
+let stm6 = Seq(Ass("a",N 3),Ass("a",Inc "a"))
+//test: I stm6 state0;; --> PASSED
+
+let stm7 = 
+    Seq(Seq(Ass("a",N(1)),Ass("b",N(20))),
+        While(
+            (Lt((V "a"),(V "b"))),
+            (Ass("a",Inc "a"))
+        ))
+//Test: I stm7 state0;;
