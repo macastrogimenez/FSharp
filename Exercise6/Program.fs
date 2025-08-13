@@ -19,17 +19,107 @@ type Fexpr =
 let rec Fexpr exp =
     match exp with
     | Leaf -> ""
-    | Node(leftTree,s,rightTree) -> (Fexpr leftTree + " " + Fexpr rightTree + " " + s).Trim()
+    | Node(leftTree,s,rightTree) -> 
+        if (String.forall (fun x -> x <> ' ' ) s) then failwith "No terms in the expression can be empty or a space"
+        else (Fexpr leftTree + " " + Fexpr rightTree + " " + s).Trim()
 
 let firstCalculation = Node(Node(Leaf,"x",Leaf),"+",Node(Leaf,"7.0",Leaf))
 let secondCalculation = Node(Node(Node(Leaf,"x",Leaf),"+",Node(Leaf,"7.0",Leaf)),"*",Node(Node(Leaf,"x",Leaf),"-",Node(Leaf,"5.0",Leaf)))
+let thirdTest = Node(Node(Leaf,"",Leaf),"+",Node(Leaf,"7.0",Leaf))
 //test: Fexpr firstCalculation;; -> PASSED
 //test: Fexpr secondCalculation;; -> PASSED
+//test: Fexpr thirdTest;; 
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------------------------------------------------------
-
-    
 
 // Exercise 6.2 - HR exercise 6.8
+(*
+We consider a simple calculator with instructions for addition, subtraction, multiplication and
+division of floats, and the functions: sin, cos, log and exp.
+The instruction set of the calculator is modelled by the following F# type:
+type Instruction = | ADD | SUB | MULT | DIV | SIN
+| COS | LOG | EXP | PUSH of float
+The calculator is a stack machine, where a stack is a list of floats.
+The execution of an instruction maps a stack to a new stack:
+The execution of ADD with stack abc ··· yields a new stack: (b + a) c ··· , where the top
+two elements a and b on the stack have been replaced by the single element (b + a). Similarly
+with regard to the instructions, SUB, MULT and DIV, which all work on the top two elements
+of the stack.
+The execution of one of the instructions SIN, COS, LOG and EXP applies the corresponding function to the top element of the stack. For example, the execution of LOG with stack
+abc ··· yields the new stack: log(a) b c ··· .
+The execution of PUSH r with the stack abc ··· pushes r on top of the stack, that is, the
+new stack is: rabc ···
+
+1. Declare a type Stack for representing the stack, and declare an F# function to interpret the
+execution of a single instruction:
+intpInstr: Stack -> Instruction -> Stack
+
+2. A program for the calculator is a list of instructions [i1, i2,...,in]. A program is executed
+by executing the instructions i1, i2,...,in one after the other, in that order, starting with an
+empty stack. The result of the execution is the top value of the stack when all instructions
+have been executed.
+Declare an F# function to interpret the execution of a program:
+intpProg: Instruction list -> float
+
+3. Declare an F# function
+trans: Fexpr * float -> Instruction list
+where Fexpr is the type for expression trees declared in Section 6.2. The value of the expression trans(fe, x) is a program prg such that intpProg(prg) gives the float value of
+fe when X has the value x. Hint: The instruction list can be obtained from the postfix form of
+the expression. (See Exercise 6.2.)
+*)
+
+
+type Instruction = 
+    | ADD 
+    | SUB 
+    | MULT 
+    | DIV 
+    | SIN
+    | COS 
+    | LOG 
+    | EXP 
+    | PUSH of float
+
+type Stack = list<float>
+module Stack =
+    let pushOnTop a (s:Stack) = 
+        let b:Stack = s |> List.append [a]
+        b
+    let push a (s:Stack) = 
+        let b:Stack = s.Tail |> List.append [a]
+        b
+
+    let doublePush a (s:Stack) = 
+        let b:Stack = s.Tail.Tail |> List.append [a]
+        b
+    let head (s:Stack) = s.Head
+
+    let tailHead (s:Stack) = s.Tail.Head
+let stackForTestingLog:Stack = [(System.Math.Exp 2.0) .. +2.0 .. 20.0]
+
+let stackForBasicArithmetic:Stack = [2.0 .. +1.0 .. 20.0]
+let intpInstr i (s:Stack) = 
+    match i with
+    | ADD -> Stack.doublePush (Stack.head s + Stack.tailHead s) s
+    | SUB -> Stack.doublePush (Stack.head s - Stack.tailHead s) s
+    | MULT -> Stack.doublePush (Stack.head s * Stack.tailHead s) s
+    | DIV -> Stack.doublePush (Stack.head s / Stack.tailHead s) s
+    | SIN -> Stack.push (System.Math.Sin (Stack.head s)) s
+    | COS -> Stack.push (System.Math.Cos (Stack.head s)) s
+    | LOG -> Stack.push (System.Math.Log (Stack.head s)) s
+    | EXP -> Stack.push (System.Math.Exp (Stack.head s)) s
+    | PUSH f -> Stack.pushOnTop f s
+
+// LOG test: intpInstr LOG stackForTestingLog;;
+// ADD test: intpInstr ADD stackForBasicArithmetic;;
+// SUB test: intpInstr SUB stackForBasicArithmetic;;
+// MULT test: intpInstr MULT stackForBasicArithmetic;;
+// DIV test: intpInstr DIV stackForBasicArithmetic;;
+// SIN test: intpInstr SIN stackForBasicArithmetic;;
+// COS test: intpInstr COS stackForBasicArithmetic;;
+// EXP test: intpInstr EXP stackForBasicArithmetic;;
+// PUSH test: intpInstr (PUSH 1.0) stackForBasicArithmetic;;
+
+
 // Exercise 6.3 - HR exercise 7.2
