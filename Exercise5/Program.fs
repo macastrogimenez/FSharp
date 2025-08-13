@@ -292,8 +292,8 @@ let rec memberOf i = function // type int -> binTree -> bool
         | n when n < 0 -> memberOf i l
         | _ -> memberOf i r
 
-memberOf 5 newTree;;
-memberOf 41 newTree;;
+//memberOf 5 newTree;;
+//memberOf 41 newTree;;
 
 // ------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------
