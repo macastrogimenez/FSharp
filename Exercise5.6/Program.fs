@@ -44,7 +44,7 @@ type bExp = (* Boolean expressions *)
 | Neg of bExp (* negation *)
 | Con of bExp * bExp (* conjunction *)
 
-let rec evalB exp  env =
+let rec evalB exp env =
     match exp with
     | TT -> true
     | FF -> false
