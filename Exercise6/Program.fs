@@ -108,17 +108,15 @@ let stackForTestingLog:Stack = [(System.Math.Exp 2.0) .. +2.0 .. 20.0]
 
 let stackForBasicArithmetic:Stack = [2.0 .. +1.0 .. 9.0]
 let intpInstr (s:Stack) i=
-    let Sh = Stack.head s
-    let StH = Stack.tailHead s
     match i with
-    | ADD -> Stack.doublePush (Sh + StH) s
-    | SUB -> Stack.doublePush (Sh - StH) s
-    | MULT -> Stack.doublePush (Sh * StH) s
-    | DIV -> Stack.doublePush (Sh / StH) s
-    | SIN -> Stack.push (System.Math.Sin (Sh)) s
-    | COS -> Stack.push (System.Math.Cos (Sh)) s
-    | LOG -> Stack.push (System.Math.Log (Sh)) s
-    | EXP -> Stack.push (System.Math.Exp (Sh)) s
+    | ADD -> Stack.doublePush (Stack.head s + Stack.tailHead s) s
+    | SUB -> Stack.doublePush (Stack.tailHead s - Stack.head s) s
+    | MULT -> Stack.doublePush (Stack.head s * Stack.tailHead s) s
+    | DIV -> Stack.doublePush (Stack.tailHead s / Stack.head s) s
+    | SIN -> Stack.push (System.Math.Sin (Stack.head s)) s
+    | COS -> Stack.push (System.Math.Cos (Stack.head s)) s
+    | LOG -> Stack.push (System.Math.Log (Stack.head s)) s
+    | EXP -> Stack.push (System.Math.Exp (Stack.head s)) s
     | PUSH f -> Stack.pushOnTop f s
 
 // LOG test: intpInstr LOG stackForTestingLog;;
@@ -131,22 +129,19 @@ let intpInstr (s:Stack) i=
 // EXP test: intpInstr EXP stackForBasicArithmetic;;
 // PUSH test: intpInstr (PUSH 1.0) stackForBasicArithmetic;;
 
+//intpProg2 : version of the calculator that requires a stack to be passed to it.
 let rec intpProg il s  = 
-    let Result = Stack.head s
     match il with 
-    | [] -> Result
+    | [] -> Stack.head s
     | x::xs -> 
         intpInstr s x
         |> intpProg xs
 
-let rec intpProg1 il  = 
+//intpProg2 : version of the calculator that starts with an empty stack without having to pass the argument to it.
+let intpProg2 il  = 
     let s:Stack = []
-    match il with 
-    | [] -> Stack.head s 
-    | x::xs -> 
-        intpInstr s x
-        |> intpProg xs
-
+    let finalStack = List.fold (fun acc instruction -> intpInstr acc instruction) s il
+    Stack.head finalStack     
 
 let iL = [ADD; SUB; MULT; PUSH 1; LOG;]
 
@@ -170,12 +165,36 @@ let rec Fexpr1 exp =
 let testExpTree = Node(Node(Leaf,"x",Leaf),"+",Node(Leaf,"7.0",Leaf))
 let testExpTree2 = Node(Node(Node(Leaf,"x",Leaf),"+",Node(Leaf,"7.0",Leaf)),"*",Node(Node(Leaf,"x",Leaf),"-",Node(Leaf,"5.0",Leaf)))
 let testExpTree3 = Node(Node(Leaf,"",Leaf),"+",Node(Leaf,"7.0",Leaf))
+
+let testExpTree4 = Node(Node(Leaf,"x",Leaf),"/",Node(Leaf,"7.0",Leaf))
 //test: Fexpr testExpTree;; -> PASSED
 //test: Fexpr testExpTree2;; -> PASSED
 //test: Fexpr testExpTree3;; -> PASSED
 
-let translate (fe, x) = 
-    (Fexpr fe).Split()
+let fromStringToExpression (s:string) x=
+    let lowerS = s.ToLower() // to avoid problems with Upper, lowercase or combination of both
+    match lowerS with 
+    |"+"->ADD
+    |"-"->SUB
+    |"*"->MULT
+    |"/"->DIV
+    |"sin"->SIN
+    |"cos"->COS
+    |"log"->LOG
+    |"exp"->EXP
+    |"x" -> PUSH x
+    |_ -> lowerS |> float |> PUSH
+let translate (fe:Fexpr1, x) = 
+    (Fexpr1 fe).Split()
     |> List.ofArray
-    |> List.map (fun y -> if y = "x" then x.ToString() else y )
+    |> List.map (fun y-> fromStringToExpression y x )
 
+let instructionsTestTree2 = translate (testExpTree2, 10);;
+let ES: Stack = []
+// testing my version -> PASSED
+let test = intpProg instructionsTestTree2 ES;;
+
+// testing AI improved version -> PASSED
+let test2 = intpProg2 instructionsTestTree2;;
+
+// testing division after debugging: intpProg2 (translate (testExpTree4, 35.0));; -> PASSED
