@@ -29,3 +29,6 @@ I then used this module to implement arithmetic expression evaluation (as per Di
 method here: https://writings.sh/post/en/arithmetic-expression). 
 However, instead of using two stacks I used one stack for the floating point numbers that took part of the calculation
 and a list where the instructions would be added and scanned from an Expression Tree.
+
+# 14/08/2025 - Exercise battery 7:
+Regarding efficiency - stack and heap (garbage collection) -> different ways of writing the same functions for more efficiency: iterative, continuation, tail-recursion, etc.
