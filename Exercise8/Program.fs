@@ -5,7 +5,7 @@ countA: int -> BinTree<’a> -> int
 that makes use of an accumulating parameter. Observe that this function is not tail recursive.
 *)
 
-// let rec g z = if p z then g(f z) else h z;;
+
 
 type 'a BinTree =
     Leaf
@@ -66,6 +66,12 @@ let rec bigListK n k =
 // would not grow as much because the continuation would be called first and then the recursion
 // would be called on the result of the continuation, which would be a much smaller stack.
 // Therefore, the stack would not grow as much and would not overflow.
+// example below:
+(*
+bigListK 300000 id
+    bigListK 299999 (fun res -> 1 :: k res)
+        bigListK 299998 (fun res -> 1 :: k res)
+*)
 
 let rec bigListKFixed n k =
     if n = 0 then k []
@@ -73,24 +79,68 @@ let rec bigListKFixed n k =
     
 // bigListKFixed 300000 id;; -> no problem
 
-(*
-bigListK 300000 id
-    bigListK 299999 (fun res -> 1 :: k res)
-        bigListK 299998 (fun res -> 1 :: k res)
-*)
-
-
-
-
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------
 // Exercise 8.4 HR exercise 9.11.
 // The functions count and countC are found on page 214 in HR.
+(*
+Declare tail-recursive functions leftTree and rightTree. By use of leftTree it should
+be possible to generate a big unbalanced tree to the left containing n+ 1 values in the nodes so
+that n is the value in the root, n− 1 is the value in the root of the left subtree, and so on. All
+subtree to the right are leaves. Similarly, using rightTree it should be possible to generate a
+big unbalanced tree to the right.
+1. Use these functions to show the stack limit when using count and countA from Exer-
+cise 9.8.
+2. Use these functions to test the performance of countC and countAC from Exercise 9.9.
+*)
 
+// let rec g z = if p z then g(f z) else h z;;
+let rec leftTree n cont : 'a BinTree = 
+    match n with
+    | 0 -> cont Leaf
+    |n -> leftTree (n-1) (fun res -> cont (Node(n,res,Leaf)))
+
+let rec rightTree n cont : 'a BinTree = 
+    match n with
+    | 0 -> cont Leaf
+    |n -> rightTree (n-1) (fun res -> cont (Node(n,Leaf,res)))
+
+#time;;
+// leftTree 1000000 id;;
+
+// rightTree 1000000 id;;
+
+// countAC (leftTree 20000 id) 0 id;; -> crashes
+
+// countA 0 (rightTree 20000 id);; -> crashes
+        
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------
 // Exercise 8.5 HR exercise 11.1.
+// Make a declaration for the sequence of odd numbers.
 
+let oddNumbers n = 
+    if n%2 = 0 then raise (System.Exception("n cannot be an even number"))
+    else seq { 1 .. + 2 .. n}
+
+// testing: oddNumbers 1101;; -> PASSED
+
+let rec s3 n = seq {
+    yield n;
+    yield! s3 (n+2)
+    }
+
+// testing: s3 1;; -> PASSED
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------
 // Exercise 8.6 HR exercise 11.2.
+// Make a declaration for the sequence of numbers 1,1,2,6,...,n!,....
+
+// yield: emits one item | yield!: emits all items from another sequence
+let rec factSeq n = seq {
+    yield 1;
+    yield! n 
+    }
+
+// TODO: 
+(*create a sequence with n using foldBack to add n + (n-1) + (n-2) etc *)
