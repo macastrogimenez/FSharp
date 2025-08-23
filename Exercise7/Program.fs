@@ -47,7 +47,7 @@ for m ≥ 0 and n ≥ 0. (Hint: use two clauses with (m,0) and (m,n) as patterns
 Give the recursion formula corresponding to the declaration.
 *)
 
-#time;;
+// #time;;
 let rec sum (m,n) = 
     match (m,n) with
     |(m,0)-> m
@@ -92,7 +92,7 @@ let rec sumIt2 (m,n,acc) =
 // One iterative declaration is enough.
 (*Give iterative declarations of the list function List.length*)
 
-#time;;
+// #time;;
 
 let rec listLength xs = 
     let acc n f= n + f  
@@ -147,7 +147,7 @@ let rec fact n =
     | 0 -> 1
     | n-> n*fact(n-1)
 
-#time;;
+// #time;;
 // fact 35;;
 
 let rec fact2 a acc = 
