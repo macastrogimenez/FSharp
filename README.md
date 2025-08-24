@@ -27,8 +27,7 @@ Regarding types, expression trees, pattern matching, modules, and lists to creat
 I had to create the stack data type using lists create a module with functions particular to this data type.
 I then used this module to implement arithmetic expression evaluation (as per Dijkstra's double stack 
 method here: https://writings.sh/post/en/arithmetic-expression). 
-However, instead of using two stacks I used one stack for the floating point numbers that took part of the calculation
-and a list where the instructions would be added and scanned from an Expression Tree.
+However, instead of using two stacks I used one stack for the floating point numbers that took part of the calculation and a list where the instructions would be added and scanned from an Expression Tree.
 
 # 14/08/2025 - Exercise battery 7:
 Regarding efficiency - stack and heap (garbage collection) -> different ways of writing the same functions for more efficiency: tail-recursion with iterative(cumulative) functions, continuations, etc.
