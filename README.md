@@ -33,6 +33,10 @@ However, instead of using two stacks I used one stack for the floating point num
 Regarding efficiency - stack and heap (garbage collection) -> different ways of writing the same functions for more efficiency: tail-recursion with iterative(cumulative) functions, continuations, etc.
 Big focus on CPS - continuation passing style.
 
-# 24/08/2025 - Exercise battery 8:
+# 23/08/2025 - Exercise battery 8:
 Regarding efficiency - developing tail-recursive functions with accumulators and continuations.
 Sequences - creating basic sequences and more complex ones (factorial function sequence).
+
+# 24/08/2025 - Exercise battery 9:
+Regarding a binary heap custom type an and developing functions to check the heap-property is satisfied, as well as creating a higher order function for mapping the heaps values with a function.
+Used several CPS functions as well as accumulators (tail-recursion), Tree traversal concepts, recursion, exceptions, pattern matching, etc.
