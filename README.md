@@ -31,4 +31,9 @@ However, instead of using two stacks I used one stack for the floating point num
 and a list where the instructions would be added and scanned from an Expression Tree.
 
 # 14/08/2025 - Exercise battery 7:
-Regarding efficiency - stack and heap (garbage collection) -> different ways of writing the same functions for more efficiency: iterative, continuation, tail-recursion, etc.
+Regarding efficiency - stack and heap (garbage collection) -> different ways of writing the same functions for more efficiency: tail-recursion with iterative(cumulative) functions, continuations, etc.
+Big focus on CPS - continuation passing style.
+
+# 24/08/2025 - Exercise battery 8:
+Regarding efficiency - developing tail-recursive functions with accumulators and continuations.
+Sequences - creating basic sequences and more complex ones (factorial function sequence).
