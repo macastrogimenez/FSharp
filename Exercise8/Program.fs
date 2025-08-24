@@ -138,6 +138,7 @@ let rec go n =
         if n > 1 then yield! go (n-1)
         elif n=0 then yield 1
         elif n=1 then yield 1
+        elif n < 0 then raise (System.ArgumentException "n cannot be a negative number")
     }
 
 let rec factSeq n =   
@@ -145,4 +146,5 @@ let rec factSeq n =
 
 let factorial n = Seq.item n (factSeq n)
 
-// test: factorial 10;; -> PASSED
+// test: factorial 4;; -> PASSED
+// test: factorial -2;; -> PASSED
