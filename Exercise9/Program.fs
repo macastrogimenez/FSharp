@@ -176,3 +176,77 @@ f, show that chkHeapProperty (map f ex3) returns false.
 
 // ---------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------
+(*
+In this question we work with sequences as covered in Chapter 11 in HR.
+Question 3.1
+• Declare the infinite sequence triNum of triangular numbers. The type of triNum is seq<int>.
+The triangular numbers are defined as xn =
+n(n+1)
+2 where xn is the nth element in the sequence.
+The first element has index n = 0.
+Hint: You may use Seq.initInfinite. The sequence is seq [0;1;3;6;...].
+
+• Declare a cached version triNumC of triNum such that already computed elements are cached.
+The type of triNumC is seq<int>.
+ *)
+
+let triNum = 
+    Seq.initInfinite (fun n -> (n*n + n)/2) 
+
+// Seq.item 0 triNum;; should be 0   -> PASSED
+// Seq.item 1 triNum;; should be 1   -> PASSED
+// Seq.item 2 triNum;; should be 3   -> PASSED
+// Seq.item 3 triNum;; should be 6   -> PASSED
+
+let triNumC = Seq.cache triNum
+
+// Seq.item 0 triNumC;; should be 0   -> PASSED
+// Seq.item 1 triNumC;; should be 1   -> PASSED
+// Seq.item 2 triNumC;; should be 3   -> PASSED
+// Seq.item 3 triNumC;; should be 6   -> PASSED
+
+// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------
+
+(*
+Question 3.2
+The function filterOddIndex s filters out all elements ei of the sequence s where i is odd. The
+function declaration is based on the assumption that the input sequence s is infinite but unfortunately
+goes into an infinite loop. For instance filterOddIndex triNum never terminates.
+let rec filterOddIndex s =
+Seq.append (Seq.singleton (Seq.item 0 s))
+(filterOddIndex (Seq.skip 2 s))
+
+• Declare your own version myFilterOddIndex similar to filterOddIndex except that it
+does not enter an infinite loop but returns the intended sequence.
+Hint: You may be inspired by Section 11.3 in HR. The sequence for myFilterOddIndex
+triNum is seq [0;3;10;21;...].
+*)
+
+let rec filterOddIndex s =
+    Seq.append (Seq.singleton (Seq.item 0 s))
+        (filterOddIndex (Seq.skip 2 s))
+
+let rec myFilterOddIndex (s:seq<'a>) = s |> Seq.cache |> Seq.skipWhile (fun x -> )
+
+myFilterOddIndex triNum;;
+
+// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------
+(*
+Question 3.3
+The sequence library Seq contains a number of functions to manipulate sequences, see Table 11.1 in
+HR. One such function is Seq.zip s1 s2 of type
+(seq<’a> -> seq<’b> -> seq<’a * ’b>)
+For instance executing Seq.zip triNum triNum returns the value
+seq [(0, 0); (1, 1); (3, 3); (6, 6); ...]
+• Declare a function seqZip of type
+(seq<’a> -> seq<’b> -> seq<’a * ’b>)
+that works the same as Seq.zip. You are not allowed to use Seq.zip but should implement
+seqZip using sequence expressions as explained in Section 11.6 in HR. You may use the tem-
+plate below.
+let rec zipSeq s1 s2 =
+seq {let e1 = Seq.item 0 s1
+let e2 = Seq.item 0 s2
+... }
+*)
