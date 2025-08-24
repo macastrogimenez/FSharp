@@ -105,7 +105,7 @@ let rec rightTree n cont : 'a BinTree =
     | 0 -> cont Leaf
     |n -> rightTree (n-1) (fun res -> cont (Node(n,Leaf,res)))
 
-#time;;
+//#time;;
 // leftTree 1000000 id;;
 
 // rightTree 1000000 id;;
@@ -125,11 +125,6 @@ let oddNumbers n =
 
 // testing: oddNumbers 1101;; -> PASSED
 
-let rec s3 n = seq {
-    yield n;
-    yield! s3 (n+2)
-    }
-
 // testing: s3 1;; -> PASSED
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------
@@ -137,10 +132,17 @@ let rec s3 n = seq {
 // Make a declaration for the sequence of numbers 1,1,2,6,...,n!,....
 
 // yield: emits one item | yield!: emits all items from another sequence
-let rec factSeq n = seq {
-    yield 1;
-    yield! n 
+let rec go n = 
+    seq {
+        yield! seq {(Seq.foldBack (fun x acc -> x * acc) (seq {1 .. + 1 .. n}) 1)}  
+        if n > 1 then yield! go (n-1)
+        elif n=0 then yield 1
+        elif n=1 then yield 1
     }
 
-// TODO: 
-(*create a sequence with n using foldBack to add n + (n-1) + (n-2) etc *)
+let rec factSeq n =   
+    Seq.rev (go n)
+
+let factorial n = Seq.item n (factSeq n)
+
+// test: factorial 10;; -> PASSED
