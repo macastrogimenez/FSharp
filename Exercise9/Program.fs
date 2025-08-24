@@ -149,6 +149,30 @@ You decide, but must explain, what order the function f is applied to the values
 instance map ((+)1) ex3 returns the heap with all values in ex3 increased by one.
 *)
 
+let rec map f hp =
+    match hp with
+    |EmptyHP -> EmptyHP
+    |HP(A,B,C) -> 
+        let mapA = f A
+        let mapLeftTree = map f B
+        let mapRightTree = map f C
+        HP(mapA,mapLeftTree,mapRightTree)
 
+// test: map (fun x -> x+1) ex3; -> PASSED
+// test: map ((+)1) ex3 -> PASSED
 
+// I decided to develop the function and map the heap in pre-order fashion since it seems 
+// the most natural due to the structure of the tree with (root, leftTree, rightTree)
 
+(*
+The heap ex3 fulfils the heap property. Give an example of a function f such that mapping f on
+all values in ex3 gives a new heap that does not fulfil the heap property. Given your definition of
+f, show that chkHeapProperty (map f ex3) returns false.
+*)
+// map (fun x -> x-(x*2)) ex3 -> returns an inverted tree, where the biggest values have turned 
+// into the smallest and vice versa
+
+// chkHeapProperty (map (fun x -> x-(x*2)) ex3);; -> should return false -> PASSED
+
+// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------
