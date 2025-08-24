@@ -37,6 +37,16 @@ let ex3 =
     HP(2,HP(3,EmptyHP,EmptyHP),HP(5,EmptyHP,EmptyHP)),
     HP(4,EmptyHP,EmptyHP))
 
+let ex4 = 
+    HP(10,
+    HP(4,HP(3,EmptyHP,EmptyHP),HP(5,EmptyHP,EmptyHP)),
+    HP(1,EmptyHP,EmptyHP))
+
+let ex5 = 
+    HP(10,
+    HP(4,HP(3,EmptyHP,EmptyHP),HP(5,EmptyHP,EmptyHP)),
+    HP(2,EmptyHP,EmptyHP))
+
 // The type is monomorphic (int) because we fed the Heap integers as Node values
 
 let empty = EmptyHP
@@ -44,6 +54,9 @@ let empty = EmptyHP
 exception HeapError of string
 
 let testException n = if n = 0 then raise (HeapError "broken heap") else "cheese"
+
+// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------
 
 (*
 Question 1.2
@@ -54,17 +67,12 @@ value empty is defined above. -> DONE
 
 • The size h of a heap h is the number of non–empty nodes in the binary tree. Declare a function
 size : Heap<’a> -> int when ’a : equality
-that returns the size of a heap. For instance, size ex3 returns 5.
+that returns the size of a heap. For instance, size ex3 returns 5. -> DONE 
 
 • Declare a function find h of type
 find : Heap<’a> -> ’a when ’a : equality
-that returns the minimum value in a non–empty heap, i.e. the root value. For instance find ex3
+that returns the minimum value in a non–empty heap, i.e. the root value. For instance find ex3 -> DONE 
 returns 1.
-
-• Declare a function chkHeapProperty h of type
-chkHeapProperty : Heap<’a> -> bool when ’a : comparison
-that returns true if the heap h fulfils the heap property and otherwise false. The empty heap by
-definition fulfils the heap property. For instance chkHeapProperty ex3 returns true.
 *)
 
 let isEmpty hp =
@@ -73,8 +81,8 @@ let isEmpty hp =
     |_ -> false
 
 // test isEmpty empty;;
-
-let rec sizeC hp =
+// #time;;
+let sizeC hp =
     let id a= a
     let rec sizeGo hp acc cont = 
         match hp with 
@@ -82,17 +90,64 @@ let rec sizeC hp =
         |HP(a,b,c) -> sizeGo c (sizeGo b (cont (acc+ 1)) cont) cont 
     sizeGo hp 0  id
 
-let rec sizeA hp =
+let sizeA hp =
     let rec sizeGo hp acc = 
         match hp with 
         |EmptyHP ->  acc
         |HP(a,b,c) -> sizeGo c (sizeGo b (acc+ 1)) 
     sizeGo hp 0
 
-// sizeC empty;;
-// sizeC ex3;;
-// sizeA empty;;
-// sizeA ex3;;
+// sizeC empty;; -> PASSED
+// sizeA empty;;  -> PASSED
+// sizeC ex3;;  -> PASSED
+// sizeA ex3;;  -> PASSED
+
+let find hp =
+    let rec goFind hp min = 
+        let mutable mMin = min
+        match hp with 
+        |EmptyHP -> min
+        |HP(a,b,c) -> 
+            if min = -9999999 then goFind c (goFind b a)
+            elif a < min then goFind c (goFind b a)
+            else min
+    goFind hp -9999999
+
+// find ex3;; -> PASSED
+// find ex4;; -> PASSED
+// find ex5;; -> PASSED
+
+(*
+• Declare a function chkHeapProperty h of type
+chkHeapProperty : Heap<’a> -> bool when ’a : comparison
+that returns true if the heap h fulfils the heap property and otherwise false. The empty heap by
+definition fulfils the heap property. For instance chkHeapProperty ex3 returns true.
+*)
+
+let chkHeapProperty hp =
+    match hp with 
+    |EmptyHP -> true
+    |HP(a,b,c) -> 
+        if find b < a || find c < a then false 
+        else true 
+
+// chkHeapProperty empty;; -> should be true -> PASSED
+// chkHeapProperty ex3;; -> should be true -> PASSED
+// chkHeapProperty ex4;; -> should be false -> PASSED
+// chkHeapProperty ex4;; -> should be false -> PASSED
+
+// ---------------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------
+
+(*
+Question 1.3
+• Declare a function map f h of type
+map : (’a -> ’b) -> Heap<’a> -> Heap<’b>
+when ’a : equality and ’b : equality
+where map f h returns the heap where the function f has been applied on all values in the heap h.
+You decide, but must explain, what order the function f is applied to the values in the heap. For
+instance map ((+)1) ex3 returns the heap with all values in ex3 increased by one.
+*)
 
 
 
