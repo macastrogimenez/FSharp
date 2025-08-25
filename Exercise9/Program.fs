@@ -227,9 +227,12 @@ let rec filterOddIndex s =
     Seq.append (Seq.singleton (Seq.item 0 s))
         (filterOddIndex (Seq.skip 2 s))
 
-let rec myFilterOddIndex (s:seq<'a>) = s |> Seq.cache |> Seq.skipWhile (fun x -> )
+let rec myFilterOddIndex (s:seq<'a>) = 
+    Seq.mapi (fun x i -> (x,i)) s
+    |> Seq.filter (fun (i,x) -> if (i%2 = 0) then true else false)
+    |> Seq.map (fun (i,x) -> x)
 
-myFilterOddIndex triNum;;
+// myFilterOddIndex triNum;;
 
 // ---------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------
@@ -249,4 +252,6 @@ let rec zipSeq s1 s2 =
 seq {let e1 = Seq.item 0 s1
 let e2 = Seq.item 0 s2
 ... }
+
+
 *)
