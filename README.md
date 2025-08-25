@@ -40,3 +40,6 @@ Sequences - creating basic sequences and more complex ones (factorial function s
 # 24/08/2025 - Exercise battery 9:
 Regarding a binary heap custom type an and developing functions to check the heap-property is satisfied, as well as creating a higher order function for mapping the heaps values with a function.
 Used several CPS functions as well as accumulators (tail-recursion), Tree traversal concepts, recursion, exceptions, pattern matching, etc.
+
+Also, regarding Sequences: creating infinite sequences and caching sequences, mapping and filtering sequences with library functions. As well as creating a method to emulate the library function Zip which merges 2 source sequences into a single sequence of tuples. 
+
