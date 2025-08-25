@@ -232,7 +232,7 @@ let rec myFilterOddIndex (s:seq<'a>) =
     |> Seq.filter (fun (i,x) -> if (i%2 = 0) then true else false)
     |> Seq.map (fun (i,x) -> x)
 
-// myFilterOddIndex triNum;;
+// test: myFilterOddIndex triNum;; -> should return [0;3;10;21;...] -> PASSED
 
 // ---------------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------------
@@ -252,6 +252,19 @@ let rec zipSeq s1 s2 =
 seq {let e1 = Seq.item 0 s1
 let e2 = Seq.item 0 s2
 ... }
-
-
 *)
+
+let zipSeq s1 s2 =
+    let rec goZip s1 s2 i =  
+        seq {
+            let e1 = Seq.item i s1 
+            let e2 = Seq.item i s2
+            yield (e1,e2)
+            yield! goZip s1 s2 (i+1)
+        }
+    goZip s1 s2 0
+
+let negSeq = seq {-10 .. 0}
+let posSeq = seq {1 .. 11}
+
+// test: Seq.item 10 (zipSeq negSeq posSeq);; -> should return (0, 11) -> PASSED
